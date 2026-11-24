@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swedish Learning 2.0</title>
+
+<style>
+:root {
+  --bg: #f4f7fb;
+  --card: #ffffff;
+  --primary: #2457a7;
+  --primary-light: #e9f0ff;
+  --text: #202b3c;
+  --muted: #64748b;
+  --border: #e1e8f0;
+  --green: #e8f7ee;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+header {
+  background: linear-gradient(135deg, #174889, #3979c9);
+  color: white;
+  padding: 30px 20px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+header p {
+  margin: 8px 0 0;
+  opacity: 0.9;
+}
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 22px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 3px 12px rgba(20, 40, 80, 0.04);
+}
+
+h2 {
+  margin-top: 0;
+  color: var(--primary);
+}
+
+h3 {
+  margin-bottom: 8px;
+}
+
+.level-buttons {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+button, select {
+  font: inherit;
+}
+
+button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+button:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.level-button {
+  padding: 13px 8px;
+  font-weight: bold;
+}
+
+.level-button.active {
+  background: #112e58;
+  outline: 3px solid #a7c6ff;
+}
+
+.secondary {
+  background: #e8eef8;
+  color: #23477b;
+}
+
+.small-button {
+  padding: 5px 10px;
+  font-size: 0.85rem;
+  margin-left: 8px;
+}
+
+.sentence {
+  padding: 13px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sentence:last-child {
+  border-bottom: none;
+}
+
+.swedish {
+  font-size: 1.12rem;
+  font-weight: bold;
+}
+
+.translation {
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.word-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.word {
+  background: var(--primary-light);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.word strong {
+  display: block;
+  color: #1d4d92;
+}
+
+.expression {
+  padding: 12px;
+  border-left: 4px solid #3979c9;
+  background: #f2f6fd;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.nav-center {
+  text-align: center;
+  flex: 1;
+}
+
+.progress-bar {
+  height: 12px;
+  background: #e4eaf3;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: #3979c9;
+  transition: width 0.3s;
+}
+
+.quiz-question {
+  margin-bottom: 20px;
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.quiz-question select {
+  padding: 8px;
+  border-radius: 7px;
+  border: 1px solid #cbd5e1;
+  margin-top: 8px;
+}
+
+.result {
+  margin-top: 12px;
+  font-weight: bold;
+}
+
+.correct {
+  color: #168348;
+}
+
+.incorrect {
+  color: #c13737;
+}
+
+.challenge {
+  background: #fff7e6;
+  border-left: 5px solid #e5a629;
+}
+
+.fact {
+  background: #f0edff;
+  border-left: 5px solid #8c72db;
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: var(--muted);
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .level-buttons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  header h1 {
+    font-size: 1.6rem;
+  }
+
+  .container {
+    padding: 12px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🇸🇪 Swedish Learning 2.0</h1>
+  <p>Learn Swedish step by step — A1 to B2</p>
+</header>
+
+<div class="container">
+
+  <!-- LEVEL SELECTOR -->
+  <section class="card">
+    <h2>Choose your level</h2>
+
+    <div class="level-buttons">
+      <button class="level-button active" data-level="A1">A1 Beginner</button>
+      <button class="level-button" data-level="A2">A2 Elementary</button>
+      <button class="level-button" data-level="B1">B1 Intermediate</button>
+      <button class="level-button" data-level="B2">B2 Upper Intermediate</button>
+    </div>
+  </section>
+
+  <!-- DAILY NAVIGATION -->
+  <section class="card">
+    <div class="navigation">
+      <button class="secondary" onclick="previousDay()">← Previous</button>
+
+      <div class="nav-center">
+        <strong id="dayTitle">Day 1</strong>
+        <div id="levelTitle">Level A1</div>
+      </div>
+
+      <button onclick="nextDay()">Next →</button>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </section>
+
+  <!-- SENTENCES -->
+  <section class="card">
+    <h2>🗣️ Today's 5 sentences</h2>
+    <div id="sentences"></div>
+  </section>
+
+  <!-- VOCABULARY -->
+  <section class="card">
+    <h2>📚 5 Vocabulary words</h2>
+    <div class="word-grid" id="vocabulary"></div>
+  </section>
+
+  <!-- EXPRESSIONS -->
+  <section class="card">
+    <h2>💬 Useful expressions</h2>
+    <div id="expressions"></div>
+  </section>
+
+  <!-- GRAMMAR -->
+  <section class="card">
+    <h2>✏️ Grammar of the day</h2>
+    <div id="grammar"></div>
+  </section>
+
+  <!-- WORK VOCAB -->
+  <section class="card">
+    <h2>💼 Swedish for work</h2>
+    <div id="workVocabulary"></div>
+  </section>
+
+  <!-- CHALLENGE -->
+  <section class="card challenge">
+    <h2>🎯 Daily challenge</h2>
+    <p id="challengeText"></p>
+  </section>
+
+  <!-- CULTURE -->
+  <section class="card fact">
+    <h2>🇸🇪 Swedish culture</h2>
+    <p id="factText"></p>
+  </section>
+
+  <!-- EN / ETT QUIZ -->
+  <section class="card">
+    <h2>🧠 En or Ett practice</h2>
+    <p>Choose the correct article for each Swedish noun.</p>
+
+    <div id="quiz"></div>
+
+    <button onclick="checkQuiz()">Check answers</button>
+    <button class="secondary" onclick="newQuiz()">New quiz</button>
+
+    <div id="quizResult" class="result"></div>
+  </section>
+
+  <!-- PROGRESS -->
+  <section class="card">
+    <h2>🏆 Your learning progress</h2>
+    <p id="progressText">Lessons visited: 0</p>
+    <p id="quizStats">Quiz attempts: 0</p>
+    <button class="secondary" onclick="resetProgress()">Reset progress</button>
+  </section>
+
+</div>
+
+<footer>
+  Swedish Learning 2.0 · Practice a little every day 🇸🇪
+</footer>
+
+<script>
+
+// =====================================================
+// LESSON DATA
+// One sample lesson for each level.
+// Add more lessons to this structure as you expand.
+// =====================================================
+
+const lessons = {
+
+A1: {
+  sentences: [
+    ["Hej! Hur mår du?", "Hi! How are you?"],
+    ["Jag heter Anna.", "My name is Anna."],
+    ["Jag bor i Sverige.", "I live in Sweden."],
+    ["Jag tycker om kaffe.", "I like coffee."],
+    ["Vad gör du idag?", "What are you doing today?"]
+  ],
+
+  vocabulary: [
+    ["Hej", "Hello"],
+    ["Tack", "Thank you"],
+    ["Vatten", "Water"],
+    ["Hem", "Home"],
+    ["Vän", "Friend"]
+  ],
+
+  expressions: [
+    ["Hur är läget?", "How's it going?"],
+    ["Tack så mycket!", "Thank you very much!"],
+    ["Ingen fara.", "No problem."]
+  ],
+
+  grammar:
+    "<strong>Present tense:</strong> Swedish verbs often have the same form for all people. " +
+    "Example: <em>Jag arbetar</em> (I work), <em>du arbetar</em> (you work), " +
+    "<em>vi arbetar</em> (we work).",
+
+  work:
+    "Arbete (work) · Kollegor (colleagues) · Möte (meeting) · " +
+    "Chef (manager) · Kontor (office)",
+
+  challenge:
+    "Introduce yourself in Swedish using at least three sentences. " +
+    "Say your name, where you live, and something you like.",
+
+  fact:
+    "In Sweden, saying 'Hej!' is common in many everyday situations. " +
+    "A simple greeting is often enough to begin a conversation."
+},
+
+A2: {
+  sentences: [
+    ["Jag brukar gå till jobbet klockan åtta.", "I usually go to work at eight."],
+    ["Igår handlade jag mat efter jobbet.", "Yesterday I bought food after work."],
+    ["Kan du hjälpa mig med det här?", "Can you help me with this?"],
+    ["Jag skulle vilja boka en tid.", "I would like to book an appointment."],
+    ["Vi träffas på fredag eftermiddag.", "We are meeting on Friday afternoon."]
+  ],
+
+  vocabulary: [
+    ["Brukar", "Usually"],
+    ["Handla", "Shop / buy groceries"],
+    ["Boka", "Book"],
+    ["Tid", "Time / appointment"],
+    ["Hjälpa", "Help"]
+  ],
+
+  expressions: [
+    ["Jag skulle vilja...", "I would like..."],
+    ["Kan du upprepa?", "Can you repeat?"],
+    ["Det låter bra.", "That sounds good."]
+  ],
+
+  grammar:
+    "<strong>Past tense:</strong> Many Swedish verbs form the past with -de or -te. " +
+    "Example: <em>jobbar → jobbade</em>, <em>köper → köpte</em>. " +
+    "Some verbs are irregular, such as <em>går → gick</em>.",
+
+  work:
+    "Arbetsplats (workplace) · Schema (schedule) · " +
+    "Ansvar (responsibility) · Paus (break) · " +
+    "Arbetsuppgift (task)",
+
+  challenge:
+    "Describe your typical day. Include what time you wake up, " +
+    "what you do, and what you usually do after work or school.",
+
+  fact:
+    "Swedes often value punctuality. Arriving on time is generally " +
+    "considered a sign of respect, especially for meetings and appointments."
+},
+
+B1: {
+  sentences: [
+    ["Jag har bott här i ungefär två år.", "I have lived here for about two years."],
+    ["Det beror på hur mycket tid vi har.", "It depends on how much time we have."],
+    ["Jag håller med dig, men det finns ett problem.", "I agree with you, but there is a problem."],
+    ["Om jag hinner, kommer jag lite tidigare.", "If I have time, I'll come a little earlier."],
+    ["Vi behöver diskutera det innan vi bestämmer oss.", "We need to discuss it before we decide."]
+  ],
+
+  vocabulary: [
+    ["Ungefär", "Approximately"],
+    ["Beror på", "Depends on"],
+    ["Hålla med", "Agree"],
+    ["Hinna", "Have time / manage to"],
+    ["Bestämma", "Decide"]
+  ],
+
+  expressions: [
+    ["Jag håller med.", "I agree."],
+    ["Å andra sidan...", "On the other hand..."],
+    ["Det beror på.", "It depends."]
+  ],
+
+  grammar:
+    "<strong>Bisats (subordinate clauses):</strong> In a subordinate clause, " +
+    "inte often comes before the verb. Example: " +
+    "<em>Jag vet att hon inte kommer idag.</em> " +
+    "(I know that she isn't coming today.)",
+
+  work:
+    "Diskutera (discuss) · Förslag (suggestion) · " +
+    "Förbättring (improvement) · Överens (in agreement) · " +
+    "Beslut (decision)",
+
+  challenge:
+    "Explain your opinion about learning Swedish. Give one reason, " +
+    "one example, and use the expression 'å andra sidan'.",
+
+  fact:
+    "Fika is a Swedish social tradition involving a coffee or tea break " +
+    "and often something small to eat. It can be an important part of " +
+    "social life at work."
+},
+
+B2: {
+  sentences: [
+    ["Det är viktigt att vi tar hänsyn till allas åsikter.", "It's important that we take everyone's opinions into consideration."],
+    ["Trots att det var stressigt lyckades vi slutföra projektet.", "Although it was stressful, we managed to finish the project."],
+    ["Jag skulle föredra att vi diskuterade frågan lite mer.", "I would prefer that we discussed the issue a little more."],
+    ["Det finns flera anledningar till att situationen har förändrats.", "There are several reasons why the situation has changed."],
+    ["Ju mer man övar, desto säkrare blir man.", "The more you practice, the more confident you become."]
+  ],
+
+  vocabulary: [
+    ["Ta hänsyn till", "Take into consideration"],
+    ["Trots att", "Despite / although"],
+    ["Slutföra", "Complete / finish"],
+    ["Föredra", "Prefer"],
+    ["Anledning", "Reason"]
+  ],
+
+  expressions: [
+    ["Så vitt jag vet...", "As far as I know..."],
+    ["Det kan innebära att...", "That may mean that..."],
+    ["Med tanke på...", "Considering..."]
+  ],
+
+  grammar:
+    "<strong>Ju... desto...</strong> is used to express a relationship between " +
+    "two changes. Example: <em>Ju mer jag läser, desto bättre förstår jag.</em> " +
+    "(The more I read, the better I understand.)",
+
+  work:
+    "Prioritera (prioritize) · Genomföra (carry out) · " +
+    "Förutsättning (condition) · Tillvägagångssätt (approach) · " +
+    "Utvärdera (evaluate)",
+
+  challenge:
+    "Explain a problem and propose a solution in Swedish. " +
+    "Try to use 'trots att', 'därför' and 'med tanke på'.",
+
+  fact:
+    "Swedish workplace communication is often relatively informal. " +
+    "People may use first names with colleagues and managers, " +
+    "while still valuing clear communication and responsibility."
+}
+
+};
+
+// =====================================================
+// EN / ETT NOUNS
+// =====================================================
+
+const nouns = [
+  ["bok", "en"],
+  ["bil", "en"],
+  ["stol", "en"],
+  ["hund", "en"],
+  ["katt", "en"],
+  ["äpple", "ett"],
+  ["hus", "ett"],
+  ["bord", "ett"],
+  ["jobb", "ett"],
+  ["fönster", "ett"],
+  ["skola", "en"],
+  ["telefon", "en"],
+  ["rum", "ett"],
+  ["språk", "ett"],
+  ["problem", "ett"]
+];
+
+// =====================================================
+// APP STATE
+// =====================================================
+
+let currentLevel = "A1";
+let currentDay = 1;
+
+let visitedLessons = JSON.parse(
+  localStorage.getItem("swedishVisited") || "[]"
+);
+
+let quizAttempts = Number(
+  localStorage.getItem("swedishQuizAttempts") || 0
+);
+
+let quizCorrect = Number(
+  localStorage.getItem("swedishQuizCorrect") || 0
+);
+
+// =====================================================
+// LEVEL SELECT
+// =====================================================
+
+document.querySelectorAll(".level-button").forEach(button => {
+  button.addEventListener("click", () => {
+    currentLevel = button.dataset.level;
+    currentDay = 1;
+
+    document.querySelectorAll(".level-button").forEach(btn => {
+      btn.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    renderLesson();
+  });
+});
+
+// =====================================================
+// LESSON RENDERING
+// =====================================================
+
+function renderLesson() {
+  const lesson = lessons[currentLevel];
+
+  document.getElementById("dayTitle").textContent =
+    "Day " + currentDay;
+
+  document.getElementById("levelTitle").textContent =
+    "Level " + currentLevel;
+
+  // SENTENCES
+  const sentenceContainer = document.getElementById("sentences");
+  sentenceContainer.innerHTML = "";
+
+  lesson.sentences.forEach((sentence, index) => {
+    const div = document.createElement("div");
+    div.className = "sentence";
+
+    div.innerHTML = `
+      <div class="swedish">
+        ${index + 1}. ${sentence[0]}
+        <button class="small-button" onclick="speak('${escapeSpeech(sentence[0])}')">
+          🔊 Listen
+        </button>
+      </div>
+      <div class="translation">${sentence[1]}</div>
+    `;
+
+    sentenceContainer.appendChild(div);
+  });
+
+  // VOCABULARY
+  const vocabularyContainer = document.getElementById("vocabulary");
+  vocabularyContainer.innerHTML = "";
+
+  lesson.vocabulary.forEach(word => {
+    const div = document.createElement("div");
+    div.className = "word";
+
+    div.innerHTML = `
+      <strong>${word[0]}</strong>
+      ${word[1]}
+      <button class="small-button" onclick="speak('${escapeSpeech(word[0])}')">
+        🔊
+      </button>
+    `;
+
+    vocabularyContainer.appendChild(div);
+  });
+
+  // EXPRESSIONS
+  const expressionContainer = document.getElementById("expressions");
+  expressionContainer.innerHTML = "";
+
+  lesson.expressions.forEach(expression => {
+    const div = document.createElement("div");
+    div.className = "expression";
+
+    div.innerHTML = `
+      <strong>${expression[0]}</strong>
+      <button class="small-button" onclick="speak('${escapeSpeech(expression[0])}')">
+        🔊
+      </button>
+      <div>${expression[1]}</div>
+    `;
+
+    expressionContainer.appendChild(div);
+  });
+
+  // GRAMMAR
+  document.getElementById("grammar").innerHTML =
+    lesson.grammar;
+
+  // WORK VOCABULARY
+  document.getElementById("workVocabulary").innerHTML =
+    lesson.work;
+
+  // DAILY CHALLENGE
+  document.getElementById("challengeText").textContent =
+    lesson.challenge;
+
+  // CULTURE FACT
+  document.getElementById("factText").textContent =
+    lesson.fact;
+
+  // PROGRESS
+  updateProgress();
+}
+
+// =====================================================
+// SPEECH
+// Uses the browser's Swedish voice if one is available.
+// =====================================================
+
+function escapeSpeech(text) {
+  return text
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'");
+}
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) {
+    alert("Speech is not supported in this browser.");
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "sv-SE";
+  utter.rate = 0.85;
+  utter.pitch = 1;
+
+  const voices = window.speechSynthesis.getVoices();
+
+  const swedishVoice = voices.find(voice =>
+    voice.lang.toLowerCase().startsWith("sv")
+  );
+
+  if (swedishVoice) {
+    utterance.voice = swedishVoice;
+  }
+
+  window.speechSynthesis.speak(utterance);
+}
+
+// =====================================================
+// DAY NAVIGATION
+// =====================================================
+
+function nextDay() {
+  currentDay++;
+
+  saveVisited();
+  renderLesson();
+}
+
+function previousDay() {
+  if (currentDay > 1) {
+    currentDay--;
+    renderLesson();
+  }
+}
+
+// =====================================================
+// PROGRESS TRACKING
+// =====================================================
+
+function saveVisited() {
+  const key = currentLevel + "-Day-" + currentDay;
+
+  if (!visitedLessons.includes(key)) {
+    visitedLessons.push(key);
+  }
+
+  localStorage.setItem(
+    "swedishVisited",
+    JSON.stringify(visitedLessons)
+  );
+
+  updateProgress();
+}
+
+function updateProgress() {
+  const progressText = document.getElementById("progressText");
+
+  progressText.textContent =
+    "Lessons visited: " + visitedLessons.length;
+
+  document.getElementById("progressFill").style.width =
+    Math.min(100, visitedLessons.length) + "%";
+
+  document.getElementById("quizStats").textContent =
+    "Quiz attempts: " + quizAttempts +
+    " | Correct answers: " + quizCorrect;
+}
+
+function resetProgress() {
+  if (!confirm("Are you sure you want to reset your learning progress?")) {
+    return;
+  }
+
+  visitedLessons = [];
+  quizAttempts = 0;
+  quizCorrect = 0;
+
+  localStorage.removeItem("swedishVisited");
+  localStorage.removeItem("swedishQuizAttempts");
+  localStorage.removeItem("swedishQuizCorrect");
+
+  updateProgress();
+}
+
+// =====================================================
+// EN / ETT QUIZ
+// =====================================================
+
+let currentQuiz = [];
+
+function newQuiz() {
+  currentQuiz = [...nouns]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 10);
+
+  const quizContainer = document.getElementById("quiz");
+  quizContainer.innerHTML = "";
+
+  document.getElementById("quizResult").textContent = "";
+
+  currentQuiz.forEach((noun, index) => {
+    const div = document.createElement("div");
+    div.className = "quiz-question";
+
+    div.innerHTML = `
+      <strong>${index + 1}. ${noun[0]}</strong>
+      <br>
+      <select id="answer${index}">
+        <option value="">Choose...</option>
+        <option value="en">En</option>
+        <option value="ett">Ett</option>
+      </select>
+    `;
+
+    quizContainer.appendChild(div);
+  });
+}
+
+function checkQuiz() {
+  let score = 0;
+
+  currentQuiz.forEach((noun, index) => {
+    const answer = document.getElementById("answer" + index);
+    const selected = answer.value;
+
+    answer.disabled = true;
+
+    if (selected === noun[1]) {
+      score++;
+      answer.style.border = "2px solid green";
+    } else {
+      answer.style.border = "2px solid red";
+    }
+  });
+
+  quizAttempts++;
+  quizCorrect += score;
+
+  localStorage.setItem("swedishQuizAttempts", quizAttempts);
+  localStorage.setItem("swedishQuizCorrect", quizCorrect);
+
+  document.getElementById("quizResult").innerHTML =
+    `You got <strong>${score} / ${currentQuiz.length}</strong> correct!`;
+
+  updateProgress();
+}
+
+// =====================================================
+// INITIALIZE
+// =====================================================
+
+renderLesson();
+newQuiz();
+updateProgress();
+
+</script>
+
+</body>
+</html>
